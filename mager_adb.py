@@ -19,9 +19,13 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
 print("alamat github @rianid")
 #masuk ke path adb.exe tersimpan
 try:
+## Parameterize
+
 	path_adb = "D:\\mobileutil\\platform-tools\\"
 	path_device = "/sdcard/"
 	nama_file = 'frida-server'
+
+## Param end.
 	print("[*] adb.exe ditemukan di "+path_adb)
 	os.chdir(path_adb)
 except FileNotFoundError:
