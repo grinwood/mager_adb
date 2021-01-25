@@ -16,7 +16,7 @@ print("""      |\      _,,,---,,_
 ZZZzz /,`.-'`'    -.  ;-;;,_
      |,4-  ) )-,_. ,\ (  `'-'
     '---''(_/--'  `-'\_)""")
-print("alamat github @rianid")
+print("https://github.com/grinwood/mager_adb")
 #masuk ke path adb.exe tersimpan
 try:
 ## Parameterize
