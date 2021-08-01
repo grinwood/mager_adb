@@ -42,9 +42,6 @@ def init() :
 		loop = 0
 	else :
 		print(devices)
-		#print("[*] Mencoba terhubung dengan "+devices)
-		#connect = os.popen("adb connect " + devices ).read()
-		#print("[*] "+connect)
 		loop = 1
 
 init()
@@ -53,7 +50,7 @@ def menu() :
 	print("===============================================================================")
 	print("1.Lihat semua apps package yang terinstall")
 	print("2.Lihat semua base.apk")
-	print("3.Pull apk")
+	print("3.Pull base.apk")
 	print("4.Push apk")
 	print("5.Deploy frida-server")
 	print("6.Jalankan frida-server")
@@ -119,11 +116,25 @@ def download(info) :
 		    print("[!] Download gagal.")
 		else :
 			print("[*] File frida-server-"+info[0]+"-android-"+info[1]+".xz telah didownload.")
-def deploy() :
+
+def cekfile() :
 	files = fnmatch.filter(os.listdir(path_adb),nama_file)
-	info =[]
 	if len(files) == 0 :
-		print("[!] File frida-server tidak ditemukan di "+path_adb)
+		print("[!] File "+nama_file+" tidak ditemukan di "+path_adb)
+		return False
+	else:
+		return True
+def cekfiledevices() :
+	print("[*] Cek frida-server on devices...")
+	query = os.popen('adb shell ls /data/local/tmp | findstr "frida-server"').read()
+	if (query.strip('\n') == "frida-server") :
+		return True
+	else :
+		print("[!] File "+nama_file+" tidak ditemukan pada devices, harap deploy dahulu")
+		return False
+def deploy() :
+	info =[]
+	if cekfile() == False :
 		put = input("[*] Download frida-server ?(y/n) : ")
 		if put == 'y' :
 			try :
@@ -149,38 +160,39 @@ def deploy() :
 	push(nama_file,'/data/local/tmp/')
 	os.popen('''adb shell "su -c 'chmod 755 /data/local/tmp/frida-server'"''')
 
+def cekrun() :
+	query = os.popen('adb shell ps -e | findstr "frida-server"').read()
+	if ("frida-server" in query) :
+		return True
+	else :
+		return False
 def runfrida():
 	global loop
-	print('[*] Menjalankan frida-server ...')
-	query = os.popen("frida-ps -U | findstr frida-server").read()
-	if ("Failed to enumerate processes" in query) == False :
+	if (cekrun() == True) :
 		print("[*] frida-server sudah berjalan pada perangkat anda.")
 	else :
-		#os.popen('''adb shell "su -c '/data/local/tmp/frida-server &'"''')
-		total =path_adb+'''adb.exe shell "su -c '/data/local/tmp/frida-server &'"'''
-		p = subprocess.Popen(path_adb+'''adb shell "su -c '/data/local/tmp/frida-server & echo "[*] Frida-server berhasil dijalankan." && echo "[!] Akhiri Sesi berikut untuk memulai kembali script. [CTRL+C]" '"''', stdout=subprocess.PIPE,shell=True,universal_newlines=True)
-		#out,err = p.communicate()
-		#p.wait()
-		while True:
-		    output = p.stdout.readline()
-		    print(output.strip())
-		    # Do something else
-		    return_code = p.poll()
-		    if return_code is not None:
-		        print('RETURN CODE', return_code)
-		        # Process has finished, read rest of the output 
-		        for output in p.stdout.readlines():
-		            print(output.strip())
-		        break
-		#query = os.popen("frida-ps -U | findstr frida-server").read()
-		#print(query)
-		#input("tes : ")
-		#p.terminate()
-		print("[*] Frida-server berhasil dijalankan.")
-		print("[!] Akhiri Sesi berikut untuk memulai kembali script. [CTRL+C]")
+		if cekfiledevices() != False:
+			print('[*] Menjalankan frida-server ...')
+			p = subprocess.Popen(path_adb+'''adb shell "su -c '/data/local/tmp/frida-server & echo "[*] Frida-server berhasil dijalankan." && echo "[!] Akhiri Sesi berikut untuk memulai kembali script. [CTRL+C]" '"''', stdout=subprocess.PIPE,shell=True,universal_newlines=True)
+			#out,err = p.communicate()
+			#p.wait()
+			while True:
+			    output = p.stdout.readline()
+			    print(output.strip())
+			    # Do something else
+			    return_code = p.poll()
+			    if return_code is not None:
+			        print('RETURN CODE', return_code)
+			        # Process has finished, read rest of the output 
+			        for output in p.stdout.readlines():
+			            print(output.strip())
+			        break
+			if (cekrun() == True) :
+				print("[*] Frida-server berhasil dijalankan.")
+				print("[!] Akhiri Sesi berikut untuk memulai kembali script. [CTRL+C]")
+			else :
+				print("[!] Frida-server gagal dijalankan.")
 
-
-#deploy()
 
 
 try :
