@@ -5,7 +5,7 @@ Script ini dibuat karena kadang saya mager copy paste path panjang dan ngetik ul
 ## Kompatibilitas
 * Python 3
 * Windows
-* Kekurangan modul silahkan install di OS masing" seperti pip3 install tqdm
+* requirment tqdm,requests,lzma
 
 ## Fitur
 1. Basic apk view.
