@@ -1,4 +1,4 @@
-# mager_adb
+# mager adb
 adb asissting script.
 Script ini dibuat karena kadang saya mager copy paste path panjang dan ngetik ulang pas pakai adb dan deploy frida ke perangkat.
 
